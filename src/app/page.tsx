@@ -25,7 +25,7 @@ interface Announcement {
 // ===== CONSTANTS =====
 const CATEGORIAS = [
   { value: 'hogar', label: 'Hogar', icon: HomeIcon, color: 'bg-rose-50 text-rose-600 border-rose-100' },
-  { value: 'tecnologia', label: 'Tech', icon: Sparkles, color: 'bg-indigo-50 text-indigo-600 border-indigo-100' },
+  { value: 'tecnologia', label: 'Tech', icon: Sparkles, color: 'bg-amber-50 text-amber-600 border-amber-100' },
   { value: 'belleza', label: 'Belleza', icon: Heart, color: 'bg-pink-50 text-pink-600 border-pink-100' },
   { value: 'educacion', label: 'Clases', icon: GraduationCap, color: 'bg-sky-50 text-sky-600 border-sky-100' },
   { value: 'transporte', label: 'Transporte', icon: Truck, color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
@@ -44,7 +44,7 @@ CAT_LABELS['general'] = 'General';
 function toast(msg: string, type: 'ok' | 'err' = 'ok') {
   const el = document.createElement('div');
   el.style.cssText = `position:fixed;bottom:40px;left:50%;transform:translateX(-50%);z-index:9999;padding:14px 28px;border-radius:16px;font-size:16px;font-weight:600;color:#fff;transition:opacity .3s;box-shadow:0 8px 30px rgba(0,0,0,.15);`;
-  el.style.background = type === 'ok' ? '#1e1b4b' : '#dc2626';
+  el.style.background = type === 'ok' ? '#d97706' : '#dc2626';
   el.textContent = msg;
   document.body.appendChild(el);
   setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 2500);
@@ -71,7 +71,7 @@ export default function MarketplaceApp() {
       <main className="flex-1">
         {showAnn && announcement && !embed && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-indigo-600 to-violet-600 text-white px-5 py-3 flex items-center gap-3">
+            className="bg-amber-500 text-white px-5 py-3 flex items-center gap-3">
             <Megaphone className="h-5 w-5 shrink-0" />
             <p className="text-sm font-medium flex-1">{announcement.message}</p>
             <button onClick={() => setShowAnn(false)} className="shrink-0 p-1 hover:bg-white/20 rounded-full">
@@ -95,7 +95,7 @@ function Header() {
           <h1 className="text-[20px] font-extrabold text-gray-900 tracking-tight leading-none">
             CHAMBATINA
           </h1>
-          <p className="text-[10px] font-semibold text-indigo-500 uppercase tracking-[0.15em]">Marketplace</p>
+          <p className="text-[10px] font-semibold text-amber-500 uppercase tracking-[0.15em]">Marketplace</p>
         </div>
       </div>
     </header>
@@ -139,23 +139,23 @@ function Marketplace() {
   return (
     <div className="max-w-2xl mx-auto px-5 pt-6 pb-28">
       {/* Hero */}
-      <div className="relative mb-8 rounded-3xl overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-sky-50">
+      <div className="relative mb-8 rounded-3xl overflow-hidden bg-gradient-to-br from-amber-50/80 via-white to-orange-50/60">
         <div className="absolute inset-0 opacity-30">
           <img src="/hero-bg.jpg" alt="" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 to-white/40" />
         </div>
         <div className="relative p-7 pt-9 pb-8">
           <div className="flex items-center gap-2 mb-3">
-            <Star className="h-4 w-4 text-indigo-500" />
-            <span className="text-[11px] font-bold text-indigo-500 uppercase tracking-[0.15em]">Tu comunidad</span>
+            <Star className="h-4 w-4 text-amber-500" />
+            <span className="text-[11px] font-bold text-amber-500 uppercase tracking-[0.15em]">Tu comunidad</span>
           </div>
           <h2 className="text-[34px] sm:text-[40px] font-extrabold text-gray-900 tracking-tight leading-[1.05] mb-2">
             Encuentra y<br />
-            <span className="bg-gradient-to-r from-indigo-600 to-violet-500 bg-clip-text text-transparent">ofrece servicios</span>
+            <span className="text-amber-600">ofrece servicios</span>
           </h2>
           <p className="text-[15px] text-gray-400 mb-6">Gratis. Rapido. Sin registro.</p>
           <button onClick={() => setShowForm(true)}
-            className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-[16px] font-bold shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/30 active:scale-[0.97] transition-all">
+            className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-2xl bg-amber-500 text-white text-[16px] font-bold shadow-lg shadow-amber-500/20 hover:bg-amber-400 active:scale-[0.97] transition-all">
             <Plus className="h-5 w-5" /> Publicar gratis
           </button>
         </div>
@@ -166,7 +166,7 @@ function Marketplace() {
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-gray-300" />
         <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
           placeholder="Buscar servicios..."
-          className="w-full pl-11 pr-11 h-12 bg-gray-50 border border-gray-100 rounded-2xl text-[15px] text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-200 transition-all" />
+          className="w-full pl-11 pr-11 h-12 bg-gray-50 border border-gray-100 rounded-2xl text-[15px] text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-200 transition-all" />
         {searchTerm && <button onClick={() => setSearchTerm('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500"><X className="h-4 w-4" /></button>}
       </div>
 
@@ -202,7 +202,7 @@ function Marketplace() {
       {/* Listings */}
       {loading && listings.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 text-indigo-400 animate-spin mb-3" />
+          <Loader2 className="h-8 w-8 text-amber-400 animate-spin mb-3" />
           <p className="text-gray-300 text-[15px]">Cargando...</p>
         </div>
       ) : listings.length === 0 ? (
@@ -274,7 +274,7 @@ function Card({ item, expanded, onToggle, index }: { item: ServiceItem; expanded
               <span className={`text-[11px] font-bold px-2.5 py-[3px] rounded-lg ${isOferta ? 'bg-emerald-50 text-emerald-600' : 'bg-sky-50 text-sky-600'}`}>
                 {isOferta ? 'OFREZCO' : 'NECESITO'}
               </span>
-              {item.precio && <span className="text-[13px] font-bold text-indigo-600">{item.precio}</span>}
+              {item.precio && <span className="text-[13px] font-bold text-amber-600">{item.precio}</span>}
               {catInfo && (
                 <span className={`text-[11px] font-medium px-2 py-[3px] rounded-lg ${catInfo.color.split(' ').slice(0, 2).join(' ')}`}>
                   {catInfo.label}
@@ -316,7 +316,7 @@ function Card({ item, expanded, onToggle, index }: { item: ServiceItem; expanded
                       </a>
                     )}
                     {item.precio && !img && (
-                      <div className="flex items-center gap-2 px-4 py-2.5 bg-indigo-50 text-indigo-600 rounded-xl font-semibold text-[14px] border border-indigo-100">
+                      <div className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 text-amber-600 rounded-xl font-semibold text-[14px] border border-amber-100">
                         <Tag className="h-4 w-4" /> {item.precio}
                       </div>
                     )}
@@ -391,7 +391,7 @@ function PublishForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
     setSubmitting(false);
   };
 
-  const inputCls = "w-full h-12 px-4 rounded-xl border border-gray-200 bg-white text-[15px] text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-200 transition-all";
+  const inputCls = "w-full h-12 px-4 rounded-xl border border-gray-200 bg-white text-[15px] text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-200 transition-all";
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -413,13 +413,13 @@ function PublishForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
           <div className="flex items-center gap-2">
             {[1, 2, 3].map(s => (
               <div key={s} className="flex-1 h-[3px] rounded-full transition-all duration-300"
-                style={{ background: step >= s ? '#4338ca' : '#f3f4f6' }} />
+                style={{ background: step >= s ? '#d97706' : '#f3f4f6' }} />
             ))}
           </div>
           <div className="flex justify-between mt-1.5">
-            <span className={`text-[11px] font-semibold ${step === 1 ? 'text-indigo-600' : 'text-gray-300'}`}>Datos</span>
-            <span className={`text-[11px] font-semibold ${step === 2 ? 'text-indigo-600' : 'text-gray-300'}`}>Publicacion</span>
-            <span className={`text-[11px] font-semibold ${step === 3 ? 'text-indigo-600' : 'text-gray-300'}`}>Final</span>
+            <span className={`text-[11px] font-semibold ${step === 1 ? 'text-amber-600' : 'text-gray-300'}`}>Datos</span>
+            <span className={`text-[11px] font-semibold ${step === 2 ? 'text-amber-600' : 'text-gray-300'}`}>Publicacion</span>
+            <span className={`text-[11px] font-semibold ${step === 3 ? 'text-amber-600' : 'text-gray-300'}`}>Final</span>
           </div>
         </div>
 
@@ -452,7 +452,7 @@ function PublishForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
                 </div>
               </div>
               <button onClick={goNext} disabled={!canNext1}
-                className="w-full h-12 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-[15px] font-bold flex items-center justify-center gap-2 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-lg shadow-indigo-500/20">
+                className="w-full h-12 rounded-xl bg-amber-500 text-white text-[15px] font-bold flex items-center justify-center gap-2 hover:bg-amber-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
                 Continuar <ChevronRight className="h-4 w-4" />
               </button>
             </motion.div>
@@ -475,13 +475,13 @@ function PublishForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
                 <label className="text-[13px] font-semibold text-gray-500 mb-1.5 block">Descripcion</label>
                 <textarea value={desc} onChange={e => setDesc(e.target.value)} maxLength={500}
                   placeholder="Que incluye, experiencia..."
-                  className="w-full h-28 px-4 py-3 rounded-xl border border-gray-200 bg-white text-[15px] resize-none text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-200 transition-all" />
+                  className="w-full h-28 px-4 py-3 rounded-xl border border-gray-200 bg-white text-[15px] resize-none text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-200 transition-all" />
               </div>
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
                   <label className="text-[13px] font-semibold text-gray-500 mb-1.5 block">Categoria</label>
                   <select value={categoria} onChange={e => setCategoria(e.target.value)}
-                    className="w-full h-12 px-3 rounded-xl border border-gray-200 bg-white text-[15px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-200 transition-all">
+                    className="w-full h-12 px-3 rounded-xl border border-gray-200 bg-white text-[15px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-200 transition-all">
                     {CATEGORIAS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                   </select>
                 </div>
@@ -495,7 +495,7 @@ function PublishForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
                   Atras
                 </button>
                 <button onClick={goNext} disabled={!canNext2}
-                  className="flex-1 h-12 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-[15px] font-bold flex items-center justify-center gap-2 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-lg shadow-indigo-500/20">
+                  className="flex-1 h-12 rounded-xl bg-amber-500 text-white text-[15px] font-bold flex items-center justify-center gap-2 hover:bg-amber-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
                   Continuar <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
@@ -530,8 +530,8 @@ function PublishForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
                         <div onClick={() => fileRefs[idx].current?.click()}
                           onDragOver={e => e.preventDefault()}
                           onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) uploadImage(f, idx); }}
-                          className="aspect-square border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-indigo-300 hover:bg-indigo-50/50 transition-all">
-                          {uploading ? <Loader2 className="h-5 w-5 animate-spin text-indigo-400" /> : <ImagePlus className="h-5 w-5 text-gray-200" />}
+                          className="aspect-square border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-amber-300 hover:bg-amber-50/50 transition-all">
+                          {uploading ? <Loader2 className="h-5 w-5 animate-spin text-amber-400" /> : <ImagePlus className="h-5 w-5 text-gray-200" />}
                         </div>
                       )}
                       <input ref={fileRefs[idx]} type="file" accept="image/jpeg,image/png,image/gif,image/webp" className="hidden"
@@ -544,7 +544,7 @@ function PublishForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
                 <p className="text-[11px] font-bold text-gray-300 uppercase tracking-wider">Resumen</p>
                 <p className="text-[14px] text-gray-600"><span className="font-bold text-gray-900">{nombre}</span> <span className="text-gray-300">·</span> {contacto}</p>
                 <p className="text-[14px] font-bold text-gray-900">{titulo}</p>
-                {precio && <p className="text-[14px] font-bold text-indigo-600">{precio}</p>}
+                {precio && <p className="text-[14px] font-bold text-amber-600">{precio}</p>}
               </div>
               <div className="flex gap-2.5">
                 <button onClick={goBack} disabled={submitting}
@@ -552,7 +552,7 @@ function PublishForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
                   Atras
                 </button>
                 <button onClick={handleSubmit} disabled={submitting}
-                  className="flex-[2] h-12 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-[15px] font-bold flex items-center justify-center gap-2 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 transition-all shadow-lg shadow-indigo-500/20">
+                  className="flex-[2] h-12 rounded-xl bg-amber-500 text-white text-[15px] font-bold flex items-center justify-center gap-2 hover:bg-amber-400 disabled:opacity-50 transition-all">
                   {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="h-4 w-4" /> Publicar</>}
                 </button>
               </div>
