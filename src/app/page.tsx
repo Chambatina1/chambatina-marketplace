@@ -6,12 +6,10 @@ import {
   Search, Plus, X, ChevronDown, ChevronUp, Send, Heart, Wrench,
   GraduationCap, Truck, Palette, Home as HomeIcon, Sparkles,
   Handshake, Phone, MapPin, Clock, Filter, Loader2, Tag,
-  Eye, Edit3, Trash2, ImagePlus, Mail, User as UserIcon, ArrowRight,
-  Shield, Package, MessageCircle, LogOut, List, Briefcase,
+  ImagePlus, User as UserIcon, Briefcase,
 } from 'lucide-react';
 
 // ===== TYPES =====
-interface UserData { id: number; nombre: string; email: string; telefono?: string; }
 interface ServiceItem {
   id: number; tipo: string; titulo: string; descripcion: string | null;
   categoria: string; ciudad: string | null; precio: string | null;
@@ -40,15 +38,6 @@ CATEGORIAS.forEach(c => { CAT_LABELS[c.value] = c.label; });
 CAT_LABELS['general'] = 'General';
 CAT_LABELS['alimentos'] = 'Alimentos';
 
-const STORAGE_KEY = 'chambatina-mp';
-
-function loadUser(): UserData | null {
-  try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : null; } catch { return null; }
-}
-function saveUser(u: UserData | null) {
-  try { if (u) localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); else localStorage.removeItem(STORAGE_KEY); } catch {}
-}
-
 // ===== TOAST =====
 function toast(msg: string, type: 'ok' | 'err' = 'ok') {
   const el = document.createElement('div');
@@ -61,36 +50,23 @@ function toast(msg: string, type: 'ok' | 'err' = 'ok') {
 
 // ===== MAIN APP =====
 export default function MarketplaceApp() {
-  const [user, setUser] = useState<UserData | null>(null);
-  const [view, setView] = useState<'login' | 'marketplace' | 'my-listings'>('login');
   const [embed] = useState(() => {
     if (typeof window === 'undefined') return false;
     return window.location.search.includes('embed=true');
   });
 
-  // Init
-  useEffect(() => {
-    const saved = loadUser();
-    if (saved && saved.id) { setUser(saved); setView('marketplace'); }
-  }, []);
-
-  const doLogin = (u: UserData) => { setUser(u); saveUser(u); setView('marketplace'); };
-  const doLogout = () => { setUser(null); saveUser(null); setView('login'); };
-
-  if (!user || view === 'login') return <LoginGate onLogin={doLogin} embed={embed} />;
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      {!embed && <Header user={user} onLogout={doLogout} view={view} setView={setView} />}
+      {!embed && <Header />}
       <main className="flex-1">
-        {view === 'marketplace' && <Marketplace user={user} />}
-        {view === 'my-listings' && <MyListings user={user} />}
+        <Marketplace />
       </main>
     </div>
   );
 }
 
 // ===== HEADER =====
-function Header({ user, onLogout, view, setView }: { user: UserData; onLogout: () => void; view: string; setView: (v: any) => void; }) {
+function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-orange-100">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
@@ -100,138 +76,14 @@ function Header({ user, onLogout, view, setView }: { user: UserData; onLogout: (
           </div>
           <span className="font-bold text-sm text-zinc-900">Marketplace</span>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => setView('marketplace')} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${view === 'marketplace' ? 'bg-orange-50 text-orange-700' : 'text-zinc-500 hover:bg-zinc-50'}`}>
-            Explorar
-          </button>
-          <button onClick={() => setView('my-listings')} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${view === 'my-listings' ? 'bg-orange-50 text-orange-700' : 'text-zinc-500 hover:bg-zinc-50'}`}>
-            Mis Publicaciones
-          </button>
-          <button onClick={onLogout} className="ml-1 p-1.5 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Salir">
-            <LogOut className="h-4 w-4" />
-          </button>
-        </div>
+        <p className="text-[11px] text-zinc-400">Publica y encuentra servicios gratis</p>
       </div>
     </header>
   );
 }
 
-// ===== LOGIN GATE =====
-function LoginGate({ onLogin, embed }: { onLogin: (u: UserData) => void; embed: boolean }) {
-  const [email, setEmail] = useState('');
-  const [nombre, setNombre] = useState('');
-  const [telefono, setTelefono] = useState('');
-  const [step, setStep] = useState<'email' | 'details'>('email');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const submitEmail = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Correo invalido'); return; }
-    setError(''); setLoading(true);
-    try {
-      const res = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
-      const json = await res.json();
-      if (json.ok) {
-        const u = json.data;
-        if (!u.nombre || u.nombre === u.email.split('@')[0]) { setStep('details'); }
-        else { onLogin({ id: u.id, nombre: u.nombre, email: u.email, telefono: u.telefono }); }
-      } else { setError(json.error || 'Error'); }
-    } catch { setError('Error de conexion'); }
-    setLoading(false);
-  };
-
-  const submitDetails = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!nombre.trim()) { setError('Ingresa tu nombre'); return; }
-    if (!telefono.trim() || telefono.trim().length < 6) { setError('Ingresa tu telefono (min 6 digitos)'); return; }
-    setError(''); setLoading(true);
-    try {
-      const res = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, nombre: nombre.trim(), telefono: telefono.trim() }) });
-      const json = await res.json();
-      if (json.ok) { onLogin({ id: json.data.id, nombre: json.data.nombre, email: json.data.email, telefono: json.data.telefono }); }
-      else { setError(json.error || 'Error'); }
-    } catch { setError('Error de conexion'); }
-    setLoading(false);
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-white flex items-center justify-center p-4">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
-        {!embed && (
-          <div className="text-center mb-8">
-            <div className="w-20 h-20 rounded-2xl bg-white shadow-lg shadow-orange-200/50 flex items-center justify-center mx-auto mb-4">
-              <Handshake className="h-10 w-10 text-orange-500" />
-            </div>
-            <h1 className="text-2xl font-bold text-zinc-900">CHAMBATINA</h1>
-            <p className="text-sm text-orange-500 font-medium tracking-widest uppercase">Marketplace</p>
-            <p className="text-sm text-zinc-500 mt-2">Ingresa tu correo para acceder</p>
-          </div>
-        )}
-        <div className="bg-white rounded-2xl shadow-xl border border-orange-100 p-6">
-          {step === 'email' ? (
-            <form onSubmit={submitEmail} className="space-y-4">
-              <label className="text-xs font-medium text-zinc-600 block">Correo electronico</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="tu@correo.com"
-                  className="w-full pl-10 h-12 text-base border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-zinc-900" autoFocus disabled={loading} />
-              </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <button type="submit" disabled={loading || !email.trim()}
-                className="w-full h-12 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors">
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Acceder <ArrowRight className="h-4 w-4" /></>}
-              </button>
-              <p className="text-xs text-center text-zinc-400">Si es tu primera vez, se creara una cuenta automaticamente</p>
-            </form>
-          ) : (
-            <form onSubmit={submitDetails} className="space-y-4">
-              <p className="text-sm text-zinc-500 mb-2">Completa tu perfil para continuar:</p>
-              <div>
-                <label className="text-xs font-medium text-zinc-600 block mb-1">Tu nombre *</label>
-                <div className="relative">
-                  <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                  <input value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Tu nombre completo"
-                    className="w-full pl-10 h-12 text-base border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-zinc-900" autoFocus disabled={loading} />
-                </div>
-              </div>
-              <div>
-                <label className="text-xs font-medium text-zinc-600 block mb-1">Telefono *</label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                  <input value={telefono} onChange={e => setTelefono(e.target.value)} placeholder="+53 0000 0000"
-                    className="w-full pl-10 h-12 text-base border border-zinc-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 text-zinc-900" disabled={loading} />
-                </div>
-              </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <button type="submit" disabled={loading || !nombre.trim()}
-                className="w-full h-12 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors">
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <>Entrar <ArrowRight className="h-4 w-4" /></>}
-              </button>
-            </form>
-          )}
-        </div>
-        {!embed && (
-          <div className="mt-6 grid grid-cols-3 gap-3">
-            {[
-              { icon: Search, label: 'Buscar servicios' },
-              { icon: Plus, label: 'Publicar gratis' },
-              { icon: Shield, label: 'Seguro' },
-            ].map(({ icon: I, label }) => (
-              <div key={label} className="flex flex-col items-center gap-1.5 text-center">
-                <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center"><I className="h-5 w-5 text-orange-600" /></div>
-                <span className="text-[11px] text-zinc-500 font-medium">{label}</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </motion.div>
-    </div>
-  );
-}
-
 // ===== MARKETPLACE VIEW =====
-function Marketplace({ user }: { user: UserData }) {
+function Marketplace() {
   const [listings, setListings] = useState<ServiceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -241,7 +93,6 @@ function Marketplace({ user }: { user: UserData }) {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [showForm, setShowForm] = useState(false);
-  const [editingItem, setEditingItem] = useState<ServiceItem | null>(null);
   const LIMIT = 20;
 
   const loadListings = useCallback(async (p: number = 1, append: boolean = false) => {
@@ -273,7 +124,7 @@ function Marketplace({ user }: { user: UserData }) {
           <h1 className="text-xl font-bold text-zinc-900">Marketplace</h1>
           <p className="text-xs text-zinc-500">Encuentra y ofrece servicios en tu comunidad</p>
         </div>
-        <button onClick={() => { setEditingItem(null); setShowForm(true); }}
+        <button onClick={() => setShowForm(true)}
           className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-semibold shadow-md hover:from-amber-600 hover:to-orange-600 transition-all">
           <Plus className="h-4 w-4" /> Publicar
         </button>
@@ -318,7 +169,7 @@ function Marketplace({ user }: { user: UserData }) {
           <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mb-4"><Briefcase className="h-8 w-8 text-amber-400" /></div>
           <h3 className="font-semibold text-zinc-700 mb-1">Aun no hay publicaciones</h3>
           <p className="text-sm text-zinc-400 mb-4">Se el primero en publicar</p>
-          <button onClick={() => { setEditingItem(null); setShowForm(true); }} className="px-4 py-2 rounded-xl bg-amber-500 text-white text-sm font-medium hover:bg-amber-600">Crear primera publicacion</button>
+          <button onClick={() => setShowForm(true)} className="px-4 py-2 rounded-xl bg-amber-500 text-white text-sm font-medium hover:bg-amber-600">Crear primera publicacion</button>
         </div>
       ) : (
         <div className="space-y-3">
@@ -401,128 +252,27 @@ function Marketplace({ user }: { user: UserData }) {
         </div>
       )}
 
-      {/* Publish/Edit Form Modal */}
+      {/* Publish Form Modal */}
       <AnimatePresence>
-        {showForm && <PublishForm user={user} editing={editingItem} onClose={() => { setShowForm(false); setEditingItem(null); }} onSaved={() => { setShowForm(false); setEditingItem(null); loadListings(1); }} />}
+        {showForm && <PublishForm onClose={() => setShowForm(false)} onSaved={() => { setShowForm(false); loadListings(1); }} />}
       </AnimatePresence>
     </div>
   );
 }
 
-// ===== MY LISTINGS VIEW =====
-function MyListings({ user }: { user: UserData }) {
-  const [listings, setListings] = useState<ServiceItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [editingItem, setEditingItem] = useState<ServiceItem | null>(null);
-  const [deleting, setDeleting] = useState<number | null>(null);
-
-  const load = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/servicios?userId=${user.id}`);
-      const json = await res.json();
-      if (json.ok) setListings(json.data);
-    } catch { toast('Error', 'err'); }
-    setLoading(false);
-  };
-  useEffect(() => { load(); }, []);
-
-  const handleDelete = async (id: number) => {
-    if (!confirm('Eliminar esta publicacion?')) return;
-    setDeleting(id);
-    try {
-      const res = await fetch(`/api/servicios?id=${id}&userId=${user.id}`, { method: 'DELETE' });
-      const json = await res.json();
-      if (json.ok) { toast('Eliminada'); load(); } else toast(json.error || 'Error', 'err');
-    } catch { toast('Error', 'err'); }
-    setDeleting(null);
-  };
-
-  const parseImgs = (item: ServiceItem): string[] => {
-    try { if (item.imagenUrls) return JSON.parse(item.imagenUrls); } catch {}
-    return item.imagenUrl ? [item.imagenUrl] : [];
-  };
-
-  return (
-    <div className="max-w-5xl mx-auto px-4 pt-4 pb-24">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-xl font-bold text-zinc-900">Mis Publicaciones</h1>
-          <p className="text-xs text-zinc-500">{listings.length} publicacion{listings.length !== 1 ? 'es' : ''}</p>
-        </div>
-        <button onClick={() => { setEditingItem(null); setShowForm(true); }}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-semibold shadow-md hover:from-amber-600 hover:to-orange-600">
-          <Plus className="h-4 w-4" /> Nueva
-        </button>
-      </div>
-
-      {loading ? (
-        <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 text-amber-500 animate-spin" /></div>
-      ) : listings.length === 0 ? (
-        <div className="text-center py-16">
-          <Package className="h-12 w-12 text-zinc-300 mx-auto mb-3" />
-          <h3 className="font-semibold text-zinc-600 mb-1">No tienes publicaciones</h3>
-          <p className="text-sm text-zinc-400 mb-4">Publica tu primer servicio</p>
-          <button onClick={() => { setEditingItem(null); setShowForm(true); }} className="px-4 py-2 rounded-xl bg-amber-500 text-white text-sm font-medium">Publicar ahora</button>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {listings.map(item => {
-            const imgs = parseImgs(item);
-            return (
-              <div key={item.id} className="border border-zinc-100 rounded-xl p-4 shadow-sm bg-white">
-                <div className="flex gap-3">
-                  {imgs[0] ? <img src={imgs[0]} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" /> :
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${item.tipo === 'oferta' ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'}`}>
-                      {item.tipo === 'oferta' ? <Send className="h-4 w-4" /> : <Search className="h-4 w-4" />}
-                    </div>
-                  }
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm text-zinc-900">{item.titulo}</h3>
-                    <p className="text-xs text-zinc-400 mt-0.5">{CAT_LABELS[item.categoria] || item.categoria} · {timeAgo(item.createdAt)}</p>
-                    {item.precio && <p className="text-xs text-orange-600 font-medium mt-1">{item.precio}</p>}
-                  </div>
-                </div>
-                <div className="flex gap-2 mt-3 pt-3 border-t border-zinc-100">
-                  <button onClick={() => { setEditingItem(item); setShowForm(true); }}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-zinc-200 text-xs font-medium text-zinc-700 hover:bg-zinc-50">
-                    <Edit3 className="h-3 w-3" /> Editar
-                  </button>
-                  <button onClick={() => handleDelete(item.id)} disabled={deleting === item.id}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-red-200 text-xs font-medium text-red-500 hover:bg-red-50 disabled:opacity-50">
-                    {deleting === item.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />} Eliminar
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      <AnimatePresence>
-        {showForm && <PublishForm user={user} editing={editingItem} onClose={() => { setShowForm(false); setEditingItem(null); }} onSaved={() => { setShowForm(false); setEditingItem(null); load(); }} />}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-// ===== PUBLISH/EDIT FORM =====
-function PublishForm({ user, editing, onClose, onSaved }: { user: UserData; editing: ServiceItem | null; onClose: () => void; onSaved: () => void; }) {
-  const [tipo, setTipo] = useState<'oferta' | 'necesidad'>(editing?.tipo as any || 'oferta');
-  const [titulo, setTitulo] = useState(editing?.titulo || '');
-  const [desc, setDesc] = useState(editing?.descripcion || '');
-  const [categoria, setCategoria] = useState(editing?.categoria || 'general');
-  const [ciudad, setCiudad] = useState(editing?.ciudad || '');
-  const [precio, setPrecio] = useState(editing?.precio || '');
-  const [contacto, setContacto] = useState(editing?.contacto || '');
+// ===== PUBLISH FORM (No auth needed) =====
+function PublishForm({ onClose, onSaved }: { onClose: () => void; onSaved: () => void; }) {
+  const [tipo, setTipo] = useState<'oferta' | 'necesidad'>('oferta');
+  const [titulo, setTitulo] = useState('');
+  const [desc, setDesc] = useState('');
+  const [nombre, setNombre] = useState('');
+  const [categoria, setCategoria] = useState('general');
+  const [ciudad, setCiudad] = useState('');
+  const [precio, setPrecio] = useState('');
+  const [contacto, setContacto] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [imagenes, setImagenes] = useState<string[]>(() => {
-    if (!editing) return [];
-    try { if (editing.imagenUrls) return JSON.parse(editing.imagenUrls); } catch {}
-    return editing.imagenUrl ? [editing.imagenUrl] : [];
-  });
+  const [imagenes, setImagenes] = useState<string[]>([]);
   const fileRefs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
 
   const uploadImage = async (file: File, idx: number) => {
@@ -542,25 +292,26 @@ function PublishForm({ user, editing, onClose, onSaved }: { user: UserData; edit
   };
 
   const handleSubmit = async () => {
+    if (!nombre.trim()) { toast('Ingresa tu nombre', 'err'); return; }
     if (!titulo.trim() || titulo.trim().length < 3) { toast('Titulo minimo 3 caracteres', 'err'); return; }
+    if (!contacto.trim()) { toast('Ingresa un telefono de contacto', 'err'); return; }
     setSubmitting(true);
     try {
       const payload = {
         tipo, titulo: titulo.trim(), descripcion: desc.trim() || null,
         categoria, ciudad: ciudad.trim() || null, precio: precio.trim() || null,
-        contacto: contacto.trim() || null,
+        contacto: contacto.trim(),
         imagenUrl: imagenes.filter(Boolean).length > 0 ? imagenes.filter(Boolean)[0] : null,
         imagenUrls: imagenes.filter(Boolean),
-        userId: user.id,
+        nombre: nombre.trim(),
       };
-      const url = '/api/servicios';
-      const res = await fetch(url, {
-        method: editing ? 'PUT' : 'POST',
+      const res = await fetch('/api/servicios', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editing ? { id: editing.id, ...payload } : payload),
+        body: JSON.stringify(payload),
       });
       const json = await res.json();
-      if (json.ok) { toast(editing ? 'Actualizada' : 'Publicado con exito'); onSaved(); }
+      if (json.ok) { toast('Publicado con exito'); onSaved(); }
       else toast(json.error || 'Error', 'err');
     } catch { toast('Error de conexion', 'err'); }
     setSubmitting(false);
@@ -576,13 +327,33 @@ function PublishForm({ user, editing, onClose, onSaved }: { user: UserData; edit
         onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div className="sticky top-0 bg-white border-b border-zinc-100 px-5 py-4 flex items-center justify-between z-10">
-          <h2 className="font-bold text-lg text-zinc-900">{editing ? 'Editar publicacion' : 'Publicar servicio'}</h2>
+          <h2 className="font-bold text-lg text-zinc-900">Publicar servicio</h2>
           <button onClick={() => !submitting && onClose()} className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-500 hover:bg-zinc-200">
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <div className="p-5 space-y-4">
+          {/* Nombre + Contacto */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-medium text-zinc-600 mb-1.5 block">Tu nombre *</label>
+              <div className="relative">
+                <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                <input value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Tu nombre"
+                  className="w-full pl-10 h-11 px-3 rounded-lg border border-zinc-200 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-400" />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-zinc-600 mb-1.5 block">Telefono *</label>
+              <div className="relative">
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                <input value={contacto} onChange={e => setContacto(e.target.value)} placeholder="+53 5555 0000"
+                  className="w-full pl-10 h-11 px-3 rounded-lg border border-zinc-200 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-400" />
+              </div>
+            </div>
+          </div>
+
           {/* Tipo */}
           <div>
             <label className="text-xs font-medium text-zinc-600 mb-2 block">Que quieres publicar?</label>
@@ -632,18 +403,11 @@ function PublishForm({ user, editing, onClose, onSaved }: { user: UserData; edit
             </div>
           </div>
 
-          {/* Precio + Contacto */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-medium text-zinc-600 mb-1.5 block">Precio</label>
-              <input value={precio} onChange={e => setPrecio(e.target.value)} placeholder="$20, Negociable..."
-                className="w-full h-11 px-3 rounded-lg border border-zinc-200 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-400" />
-            </div>
-            <div>
-              <label className="text-xs font-medium text-zinc-600 mb-1.5 block">Contacto</label>
-              <input value={contacto} onChange={e => setContacto(e.target.value)} placeholder="+53 5555 0000"
-                className="w-full h-11 px-3 rounded-lg border border-zinc-200 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-400" />
-            </div>
+          {/* Precio */}
+          <div>
+            <label className="text-xs font-medium text-zinc-600 mb-1.5 block">Precio</label>
+            <input value={precio} onChange={e => setPrecio(e.target.value)} placeholder="$20, Negociable..."
+              className="w-full h-11 px-3 rounded-lg border border-zinc-200 text-sm text-zinc-900 focus:outline-none focus:ring-2 focus:ring-orange-400" />
           </div>
 
           {/* 3 Photos */}
@@ -679,10 +443,10 @@ function PublishForm({ user, editing, onClose, onSaved }: { user: UserData; edit
           </div>
 
           {/* Submit */}
-          <button onClick={handleSubmit} disabled={submitting || !titulo.trim()}
+          <button onClick={handleSubmit} disabled={submitting || !titulo.trim() || !nombre.trim()}
             className="w-full h-12 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 disabled:opacity-50 text-white font-semibold text-sm rounded-xl flex items-center justify-center gap-2 transition-all">
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            {editing ? 'Guardar cambios' : 'Publicar'}
+            Publicar
           </button>
         </div>
       </motion.div>
