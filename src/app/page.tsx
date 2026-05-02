@@ -7,6 +7,7 @@ import {
   GraduationCap, Truck, Palette, Home as HomeIcon, Sparkles,
   Handshake, Phone, MapPin, Clock, Filter, Loader2, Tag,
   ImagePlus, User, Briefcase, ChevronRight, Megaphone, XCircle,
+  Zap, Globe, Star,
 } from 'lucide-react';
 
 // ===== TYPES =====
@@ -23,17 +24,17 @@ interface Announcement {
 
 // ===== CONSTANTS =====
 const CATEGORIAS = [
-  { value: 'hogar', label: 'Hogar', icon: HomeIcon, color: 'bg-rose-50 text-rose-600 border-rose-200' },
-  { value: 'tecnologia', label: 'Tech', icon: Sparkles, color: 'bg-violet-50 text-violet-600 border-violet-200' },
-  { value: 'belleza', label: 'Belleza', icon: Heart, color: 'bg-pink-50 text-pink-600 border-pink-200' },
-  { value: 'educacion', label: 'Clases', icon: GraduationCap, color: 'bg-sky-50 text-sky-600 border-sky-200' },
-  { value: 'transporte', label: 'Transporte', icon: Truck, color: 'bg-amber-50 text-amber-600 border-amber-200' },
-  { value: 'alimentos', label: 'Comida', icon: Heart, color: 'bg-lime-50 text-lime-600 border-lime-200' },
-  { value: 'construccion', label: 'Construccion', icon: Wrench, color: 'bg-orange-50 text-orange-600 border-orange-200' },
-  { value: 'arte', label: 'Arte', icon: Palette, color: 'bg-fuchsia-50 text-fuchsia-600 border-fuchsia-200' },
-  { value: 'salud', label: 'Salud', icon: Heart, color: 'bg-teal-50 text-teal-600 border-teal-200' },
-  { value: 'legal', label: 'Legal', icon: Briefcase, color: 'bg-slate-50 text-slate-600 border-slate-200' },
-  { value: 'otros', label: 'Mas', icon: Filter, color: 'bg-stone-50 text-stone-600 border-stone-200' },
+  { value: 'hogar', label: 'Hogar', icon: HomeIcon, color: 'bg-violet-500/15 text-violet-300 border-violet-500/30' },
+  { value: 'tecnologia', label: 'Tech', icon: Sparkles, color: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30' },
+  { value: 'belleza', label: 'Belleza', icon: Heart, color: 'bg-pink-500/15 text-pink-300 border-pink-500/30' },
+  { value: 'educacion', label: 'Clases', icon: GraduationCap, color: 'bg-sky-500/15 text-sky-300 border-sky-500/30' },
+  { value: 'transporte', label: 'Transporte', icon: Truck, color: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' },
+  { value: 'alimentos', label: 'Comida', icon: Heart, color: 'bg-lime-500/15 text-lime-300 border-lime-500/30' },
+  { value: 'construccion', label: 'Construccion', icon: Wrench, color: 'bg-amber-500/15 text-amber-300 border-amber-500/30' },
+  { value: 'arte', label: 'Arte', icon: Palette, color: 'bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30' },
+  { value: 'salud', label: 'Salud', icon: Heart, color: 'bg-teal-500/15 text-teal-300 border-teal-500/30' },
+  { value: 'legal', label: 'Legal', icon: Briefcase, color: 'bg-slate-400/15 text-slate-300 border-slate-400/30' },
+  { value: 'otros', label: 'Mas', icon: Filter, color: 'bg-stone-500/15 text-stone-300 border-stone-500/30' },
 ];
 const CAT_LABELS: Record<string, string> = {};
 CATEGORIAS.forEach(c => { CAT_LABELS[c.value] = c.label; });
@@ -42,8 +43,8 @@ CAT_LABELS['general'] = 'General';
 // ===== TOAST =====
 function toast(msg: string, type: 'ok' | 'err' = 'ok') {
   const el = document.createElement('div');
-  el.style.cssText = `position:fixed;bottom:40px;left:50%;transform:translateX(-50%);z-index:9999;padding:14px 28px;border-radius:16px;font-size:16px;font-weight:600;color:#fff;transition:opacity .3s;box-shadow:0 8px 30px rgba(0,0,0,.2);`;
-  el.style.background = type === 'ok' ? '#059669' : '#dc2626';
+  el.style.cssText = `position:fixed;bottom:40px;left:50%;transform:translateX(-50%);z-index:9999;padding:14px 28px;border-radius:16px;font-size:16px;font-weight:600;color:#fff;transition:opacity .3s;box-shadow:0 8px 30px rgba(0,0,0,.4);`;
+  el.style.background = type === 'ok' ? 'linear-gradient(135deg, #4F46E5, #7C3AED)' : '#dc2626';
   el.textContent = msg;
   document.body.appendChild(el);
   setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, 2500);
@@ -65,21 +66,31 @@ export default function MarketplaceApp() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#faf9f7] flex flex-col">
-      {!embed && <Header />}
-      <main className="flex-1">
-        {showAnn && announcement && !embed && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-orange-600 to-amber-500 text-white px-5 py-3 flex items-center gap-3">
-            <Megaphone className="h-5 w-5 shrink-0" />
-            <p className="text-sm font-medium flex-1">{announcement.message}</p>
-            <button onClick={() => setShowAnn(false)} className="shrink-0 p-1 hover:bg-white/20 rounded-full">
-              <X className="h-4 w-4" />
-            </button>
-          </motion.div>
-        )}
-        <Marketplace />
-      </main>
+    <div className="min-h-screen bg-[#0F0B1E] flex flex-col relative overflow-hidden">
+      {/* Ambient background */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-950/90 via-[#0F0B1E] to-cyan-950/80 animate-mesh" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-violet-600/10 blur-[120px] animate-float" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-cyan-600/8 blur-[100px] animate-float" style={{ animationDelay: '3s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-indigo-600/5 blur-[150px] animate-glow" />
+      </div>
+
+      <div className="relative z-10 flex flex-col min-h-screen">
+        {!embed && <Header />}
+        <main className="flex-1">
+          {showAnn && announcement && !embed && (
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-5 py-3 flex items-center gap-3 backdrop-blur-sm">
+              <Megaphone className="h-5 w-5 shrink-0" />
+              <p className="text-sm font-medium flex-1">{announcement.message}</p>
+              <button onClick={() => setShowAnn(false)} className="shrink-0 p-1 hover:bg-white/20 rounded-full transition-colors">
+                <X className="h-4 w-4" />
+              </button>
+            </motion.div>
+          )}
+          <Marketplace />
+        </main>
+      </div>
     </div>
   );
 }
@@ -87,13 +98,20 @@ export default function MarketplaceApp() {
 // ===== HEADER =====
 function Header() {
   return (
-    <header className="sticky top-0 z-50 bg-[#faf9f7]/80 backdrop-blur-xl border-b border-stone-200/60">
-      <div className="max-w-2xl mx-auto px-5 h-14 flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-orange-500 to-rose-500 flex items-center justify-center shadow-md shadow-orange-200/50">
-          <Handshake className="h-4.5 w-4.5 text-white" />
+    <header className="sticky top-0 z-50 bg-[#0F0B1E]/70 backdrop-blur-2xl border-b border-white/[0.06]">
+      <div className="max-w-2xl mx-auto px-5 h-16 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-2xl overflow-hidden shadow-lg shadow-violet-500/20 ring-1 ring-white/10">
+          <img src="/logo-icon.png" alt="Chambatina" className="w-full h-full object-cover" />
         </div>
         <div className="flex-1">
-          <span className="font-extrabold text-[17px] text-stone-800 tracking-tight leading-none">Marketplace</span>
+          <h1 className="text-[22px] font-extrabold tracking-tight leading-none bg-gradient-to-r from-violet-300 via-white to-cyan-300 bg-clip-text text-transparent">
+            CHAMBATINA
+          </h1>
+          <p className="text-[10px] font-semibold text-violet-400/70 uppercase tracking-[0.2em]">Marketplace</p>
+        </div>
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/[0.08]">
+          <Globe className="h-3.5 w-3.5 text-cyan-400" />
+          <span className="text-[11px] font-medium text-white/60">Cuba</span>
         </div>
       </div>
     </header>
@@ -135,28 +153,42 @@ function Marketplace() {
   useEffect(() => { const t = setTimeout(() => loadListings(1), 400); return () => clearTimeout(t); }, [searchTerm]);
 
   return (
-    <div className="max-w-2xl mx-auto px-5 pt-5 pb-28">
-      {/* Hero + CTA */}
-      <div className="mb-6">
-        <h1 className="text-[28px] font-extrabold text-stone-800 tracking-tight leading-tight mb-1">
-          Servicios cerca de ti
-        </h1>
-        <p className="text-[15px] text-stone-500 mb-5">
-          Publica gratis. Encuentra lo que necesitas.
-        </p>
-        <button onClick={() => setShowForm(true)}
-          className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-2xl bg-gradient-to-r from-orange-500 to-rose-500 text-white text-[17px] font-bold shadow-lg shadow-orange-500/25 hover:shadow-xl hover:shadow-orange-500/30 active:scale-[0.98] transition-all">
-          <Plus className="h-5 w-5" /> Publicar gratis
-        </button>
+    <div className="max-w-2xl mx-auto px-5 pt-6 pb-28">
+      {/* Hero */}
+      <div className="relative mb-8 rounded-3xl overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src="/hero-bg.jpg"
+            alt=""
+            className="w-full h-full object-cover opacity-50"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0F0B1E] via-[#0F0B1E]/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-violet-600/20 to-cyan-600/10" />
+        </div>
+        <div className="relative p-7 pt-10 pb-8">
+          <div className="flex items-center gap-2 mb-3">
+            <Star className="h-4 w-4 text-cyan-400" />
+            <span className="text-[11px] font-bold text-cyan-400 uppercase tracking-[0.15em]">Tu comunidad</span>
+          </div>
+          <h2 className="text-[32px] sm:text-[38px] font-extrabold text-white tracking-tight leading-[1.1] mb-2">
+            Encuentra y<br />
+            <span className="bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text text-transparent">ofrece servicios</span>
+          </h2>
+          <p className="text-[15px] text-white/50 mb-6 max-w-xs">Gratis. Rapido. Sin registro.</p>
+          <button onClick={() => setShowForm(true)}
+            className="flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-[16px] font-bold shadow-xl shadow-violet-600/30 hover:shadow-violet-600/50 hover:from-violet-500 hover:to-indigo-500 active:scale-[0.97] transition-all">
+            <Plus className="h-5 w-5" /> Publicar gratis
+          </button>
+        </div>
       </div>
 
       {/* Search */}
       <div className="relative mb-4">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-stone-400" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-violet-400" />
         <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)}
           placeholder="Buscar servicios..."
-          className="w-full pl-11 pr-11 h-12 bg-white border border-stone-200 rounded-2xl text-[15px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-400/40 focus:border-orange-300 transition-all" />
-        {searchTerm && <button onClick={() => setSearchTerm('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"><X className="h-4 w-4" /></button>}
+          className="w-full pl-11 pr-11 h-12 bg-white/[0.06] border border-white/[0.1] rounded-2xl text-[15px] text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500/50 transition-all backdrop-blur-sm" />
+        {searchTerm && <button onClick={() => setSearchTerm('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70"><X className="h-4 w-4" /></button>}
       </div>
 
       {/* Tipo Filters */}
@@ -167,7 +199,7 @@ function Marketplace() {
           { value: 'necesidad', label: 'Necesito' },
         ].map(f => (
           <button key={f.value} onClick={() => { setFilterTipo(f.value); setFilterCat(''); }}
-            className={`px-5 py-2 rounded-full text-[13px] font-semibold transition-all ${filterTipo === f.value && !filterCat ? 'bg-stone-800 text-white shadow-sm' : 'bg-white text-stone-500 border border-stone-200 hover:border-stone-300'}`}>
+            className={`px-5 py-2 rounded-full text-[13px] font-semibold transition-all ${filterTipo === f.value && !filterCat ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/30' : 'bg-white/[0.05] text-white/50 border border-white/[0.08] hover:bg-white/[0.1] hover:text-white/70'}`}>
             {f.label}
           </button>
         ))}
@@ -178,7 +210,7 @@ function Marketplace() {
         <div className="flex gap-2 mb-5 overflow-x-auto no-scrollbar pb-1">
           {CATEGORIAS.map(cat => (
             <button key={cat.value} onClick={() => setFilterCat(filterCat === cat.value ? '' : cat.value)}
-              className={`shrink-0 flex items-center gap-1.5 px-3.5 py-[7px] rounded-full text-[13px] font-medium border transition-all ${filterCat === cat.value ? cat.color : 'bg-white border-stone-200 text-stone-500 hover:border-stone-300'}`}>
+              className={`shrink-0 flex items-center gap-1.5 px-3.5 py-[7px] rounded-full text-[13px] font-medium border transition-all ${filterCat === cat.value ? cat.color : 'bg-white/[0.04] border-white/[0.08] text-white/40 hover:text-white/60 hover:bg-white/[0.08]'}`}>
               <cat.icon className="h-3.5 w-3.5" /> {cat.label}
             </button>
           ))}
@@ -186,22 +218,22 @@ function Marketplace() {
       )}
 
       {/* Count */}
-      <p className="text-[13px] text-stone-400 font-medium mb-3">{total} resultado{total !== 1 ? 's' : ''}</p>
+      <p className="text-[13px] text-white/30 font-medium mb-3">{total} resultado{total !== 1 ? 's' : ''}</p>
 
       {/* Listings */}
       {loading && listings.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 text-orange-500 animate-spin mb-3" />
-          <p className="text-stone-400 text-[15px]">Cargando...</p>
+          <Loader2 className="h-8 w-8 text-violet-400 animate-spin mb-3" />
+          <p className="text-white/40 text-[15px]">Cargando...</p>
         </div>
       ) : listings.length === 0 ? (
         <div className="text-center py-20">
-          <div className="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center mx-auto mb-4">
-            <Briefcase className="h-8 w-8 text-stone-300" />
+          <div className="w-16 h-16 rounded-2xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center mx-auto mb-4">
+            <Briefcase className="h-8 w-8 text-white/20" />
           </div>
-          <h3 className="text-lg font-bold text-stone-700 mb-1">Nada por aqui</h3>
-          <p className="text-stone-400 text-[15px] mb-5">Sé el primero en publicar</p>
-          <button onClick={() => setShowForm(true)} className="px-6 py-2.5 rounded-xl bg-stone-800 text-white text-[15px] font-semibold">
+          <h3 className="text-lg font-bold text-white/70 mb-1">Sin resultados</h3>
+          <p className="text-white/30 text-[15px] mb-5">Sé el primero en publicar</p>
+          <button onClick={() => setShowForm(true)} className="px-6 py-2.5 rounded-xl bg-violet-600 text-white text-[15px] font-semibold hover:bg-violet-500 transition-colors shadow-lg shadow-violet-600/20">
             Crear publicacion
           </button>
         </div>
@@ -216,7 +248,7 @@ function Marketplace() {
           {total > LIMIT && page < Math.ceil(total / LIMIT) && (
             <div className="flex justify-center pt-5">
               <button onClick={() => loadListings(page + 1, true)} disabled={loading}
-                className="px-5 py-2.5 rounded-xl bg-white border border-stone-200 text-[14px] font-semibold text-stone-600 hover:bg-stone-50 disabled:opacity-50 flex items-center gap-2 transition-all">
+                className="px-5 py-2.5 rounded-xl bg-white/[0.06] border border-white/[0.08] text-[14px] font-semibold text-white/60 hover:bg-white/[0.1] disabled:opacity-50 flex items-center gap-2 transition-all backdrop-blur-sm">
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 Cargar mas
               </button>
@@ -241,16 +273,18 @@ function Card({ item, expanded, onToggle, index }: { item: ServiceItem; expanded
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.03 }}>
-      <div className="bg-white rounded-2xl overflow-hidden border border-stone-200/80 shadow-sm hover:shadow-md transition-all active:scale-[0.995]" onClick={onToggle}>
+      <div
+        className="bg-white/[0.04] rounded-2xl overflow-hidden border border-white/[0.08] backdrop-blur-sm hover:bg-white/[0.07] hover:border-white/[0.12] transition-all active:scale-[0.995] cursor-pointer"
+        onClick={onToggle}>
         {img ? (
           <div className="relative">
             <img src={img} alt={item.titulo} className="w-full h-44 object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-            <span className={`absolute bottom-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-lg ${isOferta ? 'bg-emerald-500 text-white' : 'bg-sky-500 text-white'}`}>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+            <span className={`absolute bottom-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-lg backdrop-blur-sm ${isOferta ? 'bg-emerald-500/90 text-white' : 'bg-sky-500/90 text-white'}`}>
               {isOferta ? 'OFREZCO' : 'NECESITO'}
             </span>
             {item.precio && (
-              <span className="absolute bottom-3 right-3 text-[13px] font-bold px-2.5 py-1 rounded-lg bg-white/95 backdrop-blur-sm text-stone-800 shadow">
+              <span className="absolute bottom-3 right-3 text-[13px] font-bold px-2.5 py-1 rounded-lg bg-black/50 backdrop-blur-sm text-white ring-1 ring-white/20">
                 {item.precio}
               </span>
             )}
@@ -260,52 +294,52 @@ function Card({ item, expanded, onToggle, index }: { item: ServiceItem; expanded
         <div className="p-4">
           {!img && (
             <div className="flex items-center gap-2 mb-2.5">
-              <span className={`text-[11px] font-bold px-2.5 py-[3px] rounded-lg ${isOferta ? 'bg-emerald-50 text-emerald-600' : 'bg-sky-50 text-sky-600'}`}>
+              <span className={`text-[11px] font-bold px-2.5 py-[3px] rounded-lg ${isOferta ? 'bg-emerald-500/15 text-emerald-400' : 'bg-sky-500/15 text-sky-400'}`}>
                 {isOferta ? 'OFREZCO' : 'NECESITO'}
               </span>
-              {item.precio && <span className="text-[13px] font-bold text-orange-600">{item.precio}</span>}
+              {item.precio && <span className="text-[13px] font-bold text-cyan-400">{item.precio}</span>}
               {catInfo && (
-                <span className={`text-[11px] font-medium px-2 py-[3px] rounded-lg ${catInfo.color.split(' ').slice(0, 2).join(' ')}`}>
+                <span className={`text-[11px] font-medium px-2 py-[3px] rounded-lg bg-white/[0.06] text-white/50`}>
                   {catInfo.label}
                 </span>
               )}
             </div>
           )}
 
-          <h3 className="text-[16px] font-bold text-stone-800 mb-1.5 leading-snug">{item.titulo}</h3>
+          <h3 className="text-[16px] font-bold text-white/90 mb-1.5 leading-snug">{item.titulo}</h3>
 
           <div className="flex items-center gap-2.5 text-[13px]">
-            <span className="font-semibold text-stone-700">{item.user.nombre}</span>
+            <span className="font-semibold text-white/60">{item.user.nombre}</span>
             {item.ciudad && (
-              <span className="text-stone-400 flex items-center gap-1"><MapPin className="h-3 w-3" />{item.ciudad}</span>
+              <span className="text-white/30 flex items-center gap-1"><MapPin className="h-3 w-3" />{item.ciudad}</span>
             )}
-            <span className="text-stone-400">{timeAgo(item.createdAt)}</span>
+            <span className="text-white/20">{timeAgo(item.createdAt)}</span>
           </div>
 
           {/* Expanded */}
           <AnimatePresence>
             {expanded && (
               <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                <div className="mt-3.5 pt-3.5 border-t border-stone-100">
+                <div className="mt-3.5 pt-3.5 border-t border-white/[0.06]">
                   {(() => {
                     const imgs = (() => { try { if (item.imagenUrls) return JSON.parse(item.imagenUrls).filter(Boolean); } catch {} return item.imagenUrl ? [item.imagenUrl] : []; })();
                     if (imgs.length > 1) return (
                       <div className="grid grid-cols-3 gap-2 mb-3">
-                        {imgs.slice(0, 3).map((url: string, idx: number) => <img key={idx} src={url} alt="" className="w-full rounded-xl h-24 object-cover" />)}
+                        {imgs.slice(0, 3).map((url: string, idx: number) => <img key={idx} src={url} alt="" className="w-full rounded-xl h-24 object-cover ring-1 ring-white/10" />)}
                       </div>
                     );
                     return null;
                   })()}
-                  {item.descripcion && <p className="text-[14px] text-stone-600 leading-relaxed mb-3">{item.descripcion}</p>}
+                  {item.descripcion && <p className="text-[14px] text-white/50 leading-relaxed mb-3">{item.descripcion}</p>}
                   <div className="flex flex-wrap gap-2.5">
                     {item.contacto && (
                       <a href={`tel:${item.contacto.replace(/\s/g, '')}`} onClick={e => e.stopPropagation()}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-stone-800 text-white rounded-xl font-semibold text-[14px] hover:bg-stone-700 transition-colors">
+                        className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-semibold text-[14px] hover:from-violet-500 hover:to-indigo-500 transition-all shadow-lg shadow-violet-600/20">
                         <Phone className="h-4 w-4" /> Llamar
                       </a>
                     )}
                     {item.precio && !img && (
-                      <div className="flex items-center gap-2 px-4 py-2.5 bg-orange-50 text-orange-600 rounded-xl font-semibold text-[14px] border border-orange-100">
+                      <div className="flex items-center gap-2 px-4 py-2.5 bg-cyan-500/10 text-cyan-400 rounded-xl font-semibold text-[14px] border border-cyan-500/20">
                         <Tag className="h-4 w-4" /> {item.precio}
                       </div>
                     )}
@@ -374,41 +408,41 @@ function PublishForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
         body: JSON.stringify(payload),
       });
       const json = await res.json();
-      if (json.ok) { toast('Publicado con exito!'); onSaved(); }
+      if (json.ok) { toast('Publicado!'); onSaved(); }
       else toast(json.error || 'Error', 'err');
     } catch { toast('Error de conexion', 'err'); }
     setSubmitting(false);
   };
 
-  const inputCls = "w-full h-12 px-4 rounded-xl border border-stone-200 bg-white text-[15px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-400/40 focus:border-orange-300 transition-all";
+  const inputCls = "w-full h-12 px-4 rounded-xl border border-white/[0.1] bg-white/[0.06] text-[15px] text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500/50 transition-all backdrop-blur-sm";
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
       onClick={() => !submitting && onClose()}>
       <motion.div initial={{ y: 400 }} animate={{ y: 0 }} exit={{ y: 400 }}
         transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-        className="bg-[#faf9f7] w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl max-h-[92vh] overflow-y-auto"
+        className="bg-[#16112B] w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl max-h-[92vh] overflow-y-auto border border-white/[0.08] custom-scroll"
         onClick={e => e.stopPropagation()}>
 
         {/* Header */}
-        <div className="sticky top-0 bg-[#faf9f7]/95 backdrop-blur-lg px-5 pt-5 pb-3 z-10 border-b border-stone-200/50">
+        <div className="sticky top-0 bg-[#16112B]/95 backdrop-blur-xl px-5 pt-5 pb-3 z-10 border-b border-white/[0.06]">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-stone-800">Publicar</h2>
-            <button onClick={() => !submitting && onClose()} className="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 hover:bg-stone-200 transition-colors">
+            <h2 className="text-lg font-bold text-white">Publicar</h2>
+            <button onClick={() => !submitting && onClose()} className="w-9 h-9 rounded-full bg-white/[0.06] flex items-center justify-center text-white/40 hover:bg-white/[0.1] transition-colors">
               <X className="h-4 w-4" />
             </button>
           </div>
           <div className="flex items-center gap-2">
             {[1, 2, 3].map(s => (
               <div key={s} className="flex-1 h-[3px] rounded-full transition-all duration-300"
-                style={{ background: step >= s ? '#ea580c' : '#d6d3d1' }} />
+                style={{ background: step >= s ? 'linear-gradient(90deg, #4F46E5, #7C3AED)' : 'rgba(255,255,255,0.08)' }} />
             ))}
           </div>
           <div className="flex justify-between mt-1.5">
-            <span className={`text-[11px] font-semibold ${step === 1 ? 'text-orange-600' : 'text-stone-400'}`}>Tus datos</span>
-            <span className={`text-[11px] font-semibold ${step === 2 ? 'text-orange-600' : 'text-stone-400'}`}>Que publicas</span>
-            <span className={`text-[11px] font-semibold ${step === 3 ? 'text-orange-600' : 'text-stone-400'}`}>Final</span>
+            <span className={`text-[11px] font-semibold ${step === 1 ? 'text-violet-400' : 'text-white/25'}`}>Datos</span>
+            <span className={`text-[11px] font-semibold ${step === 2 ? 'text-violet-400' : 'text-white/25'}`}>Publicacion</span>
+            <span className={`text-[11px] font-semibold ${step === 3 ? 'text-violet-400' : 'text-white/25'}`}>Final</span>
           </div>
         </div>
 
@@ -417,31 +451,31 @@ function PublishForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
           {step === 1 && (
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="pt-5 space-y-4">
               <div>
-                <h3 className="text-xl font-bold text-stone-800 mb-0.5">Datos de contacto</h3>
-                <p className="text-[14px] text-stone-500">Para que te puedan encontrar</p>
+                <h3 className="text-xl font-bold text-white mb-0.5">Tus datos</h3>
+                <p className="text-[14px] text-white/30">Para que te encuentren</p>
               </div>
               <div>
-                <label className="text-[13px] font-semibold text-stone-600 mb-1.5 block">Tu nombre *</label>
+                <label className="text-[13px] font-semibold text-white/40 mb-1.5 block">Nombre *</label>
                 <input value={nombre} onChange={e => setNombre(e.target.value)} placeholder="Maria Garcia" className={inputCls} />
               </div>
               <div>
-                <label className="text-[13px] font-semibold text-stone-600 mb-1.5 block">Telefono *</label>
+                <label className="text-[13px] font-semibold text-white/40 mb-1.5 block">Telefono *</label>
                 <input value={contacto} onChange={e => setContacto(e.target.value)} placeholder="+53 5555 0000" className={inputCls} />
               </div>
               <div>
-                <label className="text-[13px] font-semibold text-stone-600 mb-2 block">Tipo</label>
+                <label className="text-[13px] font-semibold text-white/40 mb-2 block">Tipo</label>
                 <div className="grid grid-cols-2 gap-2.5">
                   {([['oferta', 'Ofrezco', Send, 'emerald'], ['necesidad', 'Necesito', Search, 'sky']] as const).map(([v, l, I, c]) => (
                     <button key={String(v)} type="button" onClick={() => setTipo(v as any)}
-                      className={`p-3.5 rounded-xl border-2 text-center transition-all ${tipo === v ? `border-${c}-500 bg-${c}-50` : 'border-stone-200 hover:border-stone-300'}`}>
-                      <I className={`h-6 w-6 mx-auto mb-1.5 ${tipo === v ? `text-${c}-600` : 'text-stone-400'}`} />
-                      <p className={`text-[14px] font-semibold ${tipo === v ? `text-${c}-700` : 'text-stone-500'}`}>{l}</p>
+                      className={`p-3.5 rounded-xl border-2 text-center transition-all backdrop-blur-sm ${tipo === v ? `border-${c}-500/50 bg-${c}-500/10` : 'border-white/[0.08] hover:border-white/[0.15]'}`}>
+                      <I className={`h-6 w-6 mx-auto mb-1.5 ${tipo === v ? `text-${c}-400` : 'text-white/25'}`} />
+                      <p className={`text-[14px] font-semibold ${tipo === v ? `text-${c}-300` : 'text-white/40'}`}>{l}</p>
                     </button>
                   ))}
                 </div>
               </div>
               <button onClick={goNext} disabled={!canNext1}
-                className="w-full h-12 rounded-xl bg-stone-800 text-white text-[15px] font-bold flex items-center justify-center gap-2 hover:bg-stone-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+                className="w-full h-12 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-[15px] font-bold flex items-center justify-center gap-2 hover:from-violet-500 hover:to-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-lg shadow-violet-600/20">
                 Continuar <ChevronRight className="h-4 w-4" />
               </button>
             </motion.div>
@@ -451,40 +485,40 @@ function PublishForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
           {step === 2 && (
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="pt-5 space-y-4">
               <div>
-                <h3 className="text-xl font-bold text-stone-800 mb-0.5">Describe tu publicacion</h3>
-                <p className="text-[14px] text-stone-500">Sé claro y especifico</p>
+                <h3 className="text-xl font-bold text-white mb-0.5">Describe tu servicio</h3>
+                <p className="text-[14px] text-white/30">Breve y claro</p>
               </div>
               <div>
-                <label className="text-[13px] font-semibold text-stone-600 mb-1.5 block">Titulo *</label>
+                <label className="text-[13px] font-semibold text-white/40 mb-1.5 block">Titulo *</label>
                 <input value={titulo} onChange={e => setTitulo(e.target.value)} maxLength={120}
                   placeholder={tipo === 'oferta' ? 'Pintura de interiores' : 'Necesito electricista'}
                   className={inputCls} />
               </div>
               <div>
-                <label className="text-[13px] font-semibold text-stone-600 mb-1.5 block">Descripcion</label>
+                <label className="text-[13px] font-semibold text-white/40 mb-1.5 block">Descripcion</label>
                 <textarea value={desc} onChange={e => setDesc(e.target.value)} maxLength={500}
-                  placeholder="Describe tu servicio, que incluye, tu experiencia..."
-                  className="w-full h-28 px-4 py-3 rounded-xl border border-stone-200 bg-white text-[15px] resize-none text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-400/40 focus:border-orange-300 transition-all" />
+                  placeholder="Que incluye, experiencia..."
+                  className="w-full h-28 px-4 py-3 rounded-xl border border-white/[0.1] bg-white/[0.06] text-[15px] resize-none text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500/50 transition-all backdrop-blur-sm" />
               </div>
               <div className="grid grid-cols-2 gap-2.5">
                 <div>
-                  <label className="text-[13px] font-semibold text-stone-600 mb-1.5 block">Categoria</label>
+                  <label className="text-[13px] font-semibold text-white/40 mb-1.5 block">Categoria</label>
                   <select value={categoria} onChange={e => setCategoria(e.target.value)}
-                    className="w-full h-12 px-3 rounded-xl border border-stone-200 bg-white text-[15px] text-stone-800 focus:outline-none focus:ring-2 focus:ring-orange-400/40 focus:border-orange-300 transition-all">
+                    className="w-full h-12 px-3 rounded-xl border border-white/[0.1] bg-white/[0.06] text-[15px] text-white focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500/50 transition-all">
                     {CATEGORIAS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-[13px] font-semibold text-stone-600 mb-1.5 block">Ciudad</label>
+                  <label className="text-[13px] font-semibold text-white/40 mb-1.5 block">Ciudad</label>
                   <input value={ciudad} onChange={e => setCiudad(e.target.value)} placeholder="La Habana" className={inputCls} />
                 </div>
               </div>
               <div className="flex gap-2.5">
-                <button onClick={goBack} className="flex-1 h-12 rounded-xl border border-stone-200 text-[15px] font-semibold text-stone-600 flex items-center justify-center hover:bg-white transition-all">
+                <button onClick={goBack} className="flex-1 h-12 rounded-xl border border-white/[0.1] text-[15px] font-semibold text-white/50 flex items-center justify-center hover:bg-white/[0.06] transition-all">
                   Atras
                 </button>
                 <button onClick={goNext} disabled={!canNext2}
-                  className="flex-1 h-12 rounded-xl bg-stone-800 text-white text-[15px] font-bold flex items-center justify-center gap-2 hover:bg-stone-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all">
+                  className="flex-1 h-12 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-[15px] font-bold flex items-center justify-center gap-2 hover:from-violet-500 hover:to-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed transition-all shadow-lg shadow-violet-600/20">
                   Continuar <ChevronRight className="h-4 w-4" />
                 </button>
               </div>
@@ -495,20 +529,20 @@ function PublishForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
           {step === 3 && (
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="pt-5 space-y-4">
               <div>
-                <h3 className="text-xl font-bold text-stone-800 mb-0.5">Detalles extra</h3>
-                <p className="text-[14px] text-stone-500">Opcional pero recomendado</p>
+                <h3 className="text-xl font-bold text-white mb-0.5">Extras</h3>
+                <p className="text-[14px] text-white/30">Opcional</p>
               </div>
               <div>
-                <label className="text-[13px] font-semibold text-stone-600 mb-1.5 block">Precio</label>
+                <label className="text-[13px] font-semibold text-white/40 mb-1.5 block">Precio</label>
                 <input value={precio} onChange={e => setPrecio(e.target.value)} placeholder="$20, Negociable..." className={inputCls} />
               </div>
               <div>
-                <label className="text-[13px] font-semibold text-stone-600 mb-2 block">Fotos</label>
+                <label className="text-[13px] font-semibold text-white/40 mb-2 block">Fotos</label>
                 <div className="grid grid-cols-3 gap-2.5">
                   {[0, 1, 2].map(idx => (
                     <div key={idx}>
                       {imagenes[idx] ? (
-                        <div className="relative rounded-xl overflow-hidden border border-stone-200 aspect-square">
+                        <div className="relative rounded-xl overflow-hidden border border-white/10 aspect-square">
                           <img src={imagenes[idx]} alt="" className="w-full h-full object-cover" />
                           <button type="button" onClick={() => { const n = [...imagenes]; n[idx] = ''; setImagenes(n); }}
                             className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80">
@@ -519,8 +553,8 @@ function PublishForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
                         <div onClick={() => fileRefs[idx].current?.click()}
                           onDragOver={e => e.preventDefault()}
                           onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) uploadImage(f, idx); }}
-                          className="aspect-square border-2 border-dashed border-stone-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-orange-400 hover:bg-orange-50/40 transition-all">
-                          {uploading ? <Loader2 className="h-5 w-5 animate-spin text-orange-500" /> : <ImagePlus className="h-5 w-5 text-stone-300" />}
+                          className="aspect-square border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-violet-500/40 hover:bg-violet-500/5 transition-all">
+                          {uploading ? <Loader2 className="h-5 w-5 animate-spin text-violet-400" /> : <ImagePlus className="h-5 w-5 text-white/15" />}
                         </div>
                       )}
                       <input ref={fileRefs[idx]} type="file" accept="image/jpeg,image/png,image/gif,image/webp" className="hidden"
@@ -529,19 +563,19 @@ function PublishForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
                   ))}
                 </div>
               </div>
-              <div className="bg-white rounded-xl p-3.5 border border-stone-200 space-y-1.5">
-                <p className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Resumen</p>
-                <p className="text-[14px] text-stone-800"><span className="font-bold">{nombre}</span> <span className="text-stone-400">·</span> {contacto}</p>
-                <p className="text-[14px] font-bold text-stone-800">{titulo}</p>
-                {precio && <p className="text-[14px] font-bold text-orange-600">{precio}</p>}
+              <div className="bg-white/[0.04] rounded-xl p-3.5 border border-white/[0.08] space-y-1.5">
+                <p className="text-[11px] font-bold text-white/20 uppercase tracking-wider">Resumen</p>
+                <p className="text-[14px] text-white/60"><span className="font-bold text-white/80">{nombre}</span> <span className="text-white/20">·</span> {contacto}</p>
+                <p className="text-[14px] font-bold text-white/80">{titulo}</p>
+                {precio && <p className="text-[14px] font-bold text-cyan-400">{precio}</p>}
               </div>
               <div className="flex gap-2.5">
                 <button onClick={goBack} disabled={submitting}
-                  className="flex-1 h-12 rounded-xl border border-stone-200 text-[15px] font-semibold text-stone-600 flex items-center justify-center hover:bg-white transition-all">
+                  className="flex-1 h-12 rounded-xl border border-white/[0.1] text-[15px] font-semibold text-white/50 flex items-center justify-center hover:bg-white/[0.06] transition-all">
                   Atras
                 </button>
                 <button onClick={handleSubmit} disabled={submitting}
-                  className="flex-[2] h-12 rounded-xl bg-gradient-to-r from-orange-500 to-rose-500 text-white text-[15px] font-bold flex items-center justify-center gap-2 hover:from-orange-600 hover:to-rose-600 disabled:opacity-50 transition-all shadow-lg shadow-orange-500/25">
+                  className="flex-[2] h-12 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-[15px] font-bold flex items-center justify-center gap-2 hover:from-violet-500 hover:to-indigo-500 disabled:opacity-50 transition-all shadow-xl shadow-violet-600/30">
                   {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="h-4 w-4" /> Publicar</>}
                 </button>
               </div>
@@ -558,10 +592,10 @@ function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
   const m = Math.floor(diff / 60000);
   if (m < 1) return 'Ahora';
-  if (m < 60) return `Hace ${m}m`;
+  if (m < 60) return `${m}m`;
   const h = Math.floor(m / 60);
-  if (h < 24) return `Hace ${h}h`;
+  if (h < 24) return `${h}h`;
   const d = Math.floor(h / 24);
-  if (d < 30) return `Hace ${d}d`;
+  if (d < 30) return `${d}d`;
   return new Date(dateStr).toLocaleDateString('es-CU', { day: 'numeric', month: 'short' });
 }
