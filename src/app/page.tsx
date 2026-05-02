@@ -17,7 +17,7 @@ interface ServiceItem {
   categoria: string; ciudad: string | null; precio: string | null;
   contacto: string | null; imagenUrl: string | null; imagenUrls: string | null;
   activo: boolean; createdAt: string;
-  user: { id: number; nombre: string; ciudad: string | null };
+  user: { id: number; nombre: string; direccion: string | null };
 }
 
 // ===== CONSTANTS =====
@@ -557,7 +557,7 @@ function PublishForm({ user, editing, onClose, onSaved }: { user: UserData; edit
       const res = await fetch(url, {
         method: editing ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editing ? { id: editing.id, userId: user.id, ...payload } : payload),
+        body: JSON.stringify(editing ? { id: editing.id, ...payload } : payload),
       });
       const json = await res.json();
       if (json.ok) { toast(editing ? 'Actualizada' : 'Publicado con exito'); onSaved(); }
@@ -587,8 +587,8 @@ function PublishForm({ user, editing, onClose, onSaved }: { user: UserData; edit
           <div>
             <label className="text-xs font-medium text-zinc-600 mb-2 block">Que quieres publicar?</label>
             <div className="grid grid-cols-2 gap-2">
-              {[['oferta', 'Ofrezco', 'Publico un servicio', Send, 'emerald'], ['necesidad', 'Necesito', 'Busco un servicio', Search, 'blue']].map(([v, l, d, I, c]) => (
-                <button key={v} type="button" onClick={() => setTipo(v as any)}
+              {([['oferta', 'Ofrezco', 'Publico un servicio', Send, 'emerald'], ['necesidad', 'Necesito', 'Busco un servicio', Search, 'blue']] as const).map(([v, l, d, I, c]) => (
+                <button key={String(v)} type="button" onClick={() => setTipo(v as any)}
                   className={`p-3 rounded-xl border-2 text-center transition-all ${tipo === v ? `border-${c}-400 bg-${c}-50` : 'border-zinc-200 hover:border-zinc-300'}`}>
                   <I className={`h-5 w-5 mx-auto mb-1 ${tipo === v ? `text-${c}-600` : 'text-zinc-400'}`} />
                   <p className={`text-sm font-medium ${tipo === v ? `text-${c}-700` : 'text-zinc-500'}`}>{l}</p>

@@ -12,13 +12,13 @@ export async function POST(request: NextRequest) {
 
     const cleanEmail = email.toLowerCase().trim();
 
-    let user = await db.user.findUnique({ where: { email: cleanEmail } });
+    let user = await db.marketplaceUser.findUnique({ where: { email: cleanEmail } });
 
     if (user) {
       if (user.isActive === false) {
         return NextResponse.json({ ok: false, error: 'Tu cuenta ha sido desactivada.' }, { status: 403 });
       }
-      user = await db.user.update({
+      user = await db.marketplaceUser.update({
         where: { id: user.id },
         data: {
           updatedAt: new Date(),
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         },
       });
     } else {
-      user = await db.user.create({
+      user = await db.marketplaceUser.create({
         data: {
           nombre: nombre || cleanEmail.split('@')[0] || 'Usuario',
           email: cleanEmail,
