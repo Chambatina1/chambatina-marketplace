@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  email     String   @unique
+  telefono  String?
+  direccion String?
+  password  String?
+  role      String?  @default("user")
+  isActive  Boolean? @default(true)
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt @db.Timestamp(6)
+
+  listings ServiceListing[]
+}
+
+model ServiceListing {
+  id          Int      @id @default(autoincrement())
+  tipo        String   @default("oferta")
+  titulo      String
+  descripcion String?
+  categoria   String   @default("general")
+  ciudad      String?
+  precio      String?
+  contacto    String?
+  imagenUrl   String?
+  imagenUrls  String?
+  userId      Int
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime @updatedAt @db.Timestamp(6)
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tipo])
+  @@index([categoria])
+  @@index([userId])
+  @@index([activo])
+  @@index([createdAt])
+}
